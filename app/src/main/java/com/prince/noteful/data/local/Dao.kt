@@ -16,10 +16,10 @@ interface NoteDao {
     suspend fun getNoteById(id:String): NoteEntity?
 
     @Upsert
-    suspend fun upsert(note: NoteEntity)
+    suspend fun upsertNote(note: NoteEntity)
 
     @Delete
-    suspend fun delete(note: NoteEntity)
+    suspend fun deleteNote(note: NoteEntity)
 
     @Query("""
         SELECT * FROM notes
