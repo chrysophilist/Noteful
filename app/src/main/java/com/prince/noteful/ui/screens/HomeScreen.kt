@@ -19,18 +19,21 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.prince.noteful.data.local.NoteEntity
 import com.prince.noteful.ui.viewModels.NotefulViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +41,23 @@ import com.prince.noteful.ui.viewModels.NotefulViewModel
 fun HomeScreen(
     viewModel: NotefulViewModel
 ) {
+    var isNoteSheetOpen by remember { mutableStateOf(false) }
+
+    if(isNoteSheetOpen){
+        ModalBottomSheet(
+            onDismissRequest = { isNoteSheetOpen = false },
+            sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = true,
+            )
+        ) {
+            AddNoteScreen(
+                viewModel,
+                onDismiss = { isNoteSheetOpen=false }
+            )
+        }
+
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -60,7 +80,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {}
+                onClick = { isNoteSheetOpen = true }
             ) {
                 Icon(Icons.Default.Add, "Add Note")
             }
