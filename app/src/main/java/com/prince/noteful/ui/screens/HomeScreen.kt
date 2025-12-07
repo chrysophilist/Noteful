@@ -1,11 +1,12 @@
 package com.prince.noteful.ui.screens
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -13,8 +14,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -121,7 +125,8 @@ fun HomeScreen(
                         onClick = {
                             viewModel.loadNote(note.id)
                             onCardClick()
-                        }
+                        },
+                        onDelete = { viewModel.deleteNote(note) }
                     )
                 }
             }
@@ -133,25 +138,46 @@ fun HomeScreen(
 fun NoteCard(
     title: String,
     content: String,
-    onClick: ()-> Unit
+    onClick: ()-> Unit,
+    onDelete: ()-> Unit
 ) {
-    OutlinedCard(
-        modifier = Modifier.clickable(
-            enabled = true,
-            onClick = { onClick() }
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge
+    var showMenu by remember { mutableStateOf(false) }
+
+    Box {
+        OutlinedCard(
+            modifier = Modifier.fillMaxWidth()
+                .combinedClickable(
+                enabled = true,
+                onClick = { onClick() },
+                onLongClick = { showMenu = true }
             )
-            Text(
-                text = content,
-                style = MaterialTheme.typography.bodyLarge
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = content,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    onDelete()
+                    showMenu = false
+                },
+                text = {Text("Delete")},
+                leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}
             )
         }
     }

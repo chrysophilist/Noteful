@@ -1,6 +1,7 @@
 package com.prince.noteful.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NotificationAdd
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -93,7 +98,26 @@ fun ActiveNoteScreen(
                     IconButton(onClick = {}) { Icon(Icons.Default.PushPin, "Pin") }
                     IconButton(onClick = {}) { Icon(Icons.Default.NotificationAdd, "Reminder") }
                     IconButton(onClick = {}) { Icon(Icons.Default.Archive, "Archive") }
-                    IconButton(onClick = {}) { Icon(Icons.Default.MoreVert, "More") }
+                    Box {
+                        var showMenu by remember { mutableStateOf(false) }
+                        IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "More") }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    activeNote?.let { thisNote->
+                                        viewModel.deleteNote(thisNote)
+                                    }
+                                    showMenu = false
+                                    onSave()
+                                },
+                                text = {Text("Delete")},
+                                leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}
+                            )
+                        }
+                    }
                 }
             )
         }
