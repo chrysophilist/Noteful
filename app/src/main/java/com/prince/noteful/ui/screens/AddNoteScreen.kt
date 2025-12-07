@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,9 +41,9 @@ fun AddNoteScreen(
     viewModel: NotefulViewModel,
     onDismiss: ()-> Unit
 ) {
-    var titleInput by remember { mutableStateOf("") }
-    var contentInput by remember { mutableStateOf("") }
-    val scrollState = rememberScrollState()
+
+    var titleInput by rememberSaveable { mutableStateOf("") }
+    var contentInput by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -115,8 +116,7 @@ fun AddNoteScreen(
             maxLines = Int.MAX_VALUE,
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f)
-                .verticalScroll(scrollState),
+                .weight(1f),
             textStyle = MaterialTheme.typography.bodyLarge,
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,

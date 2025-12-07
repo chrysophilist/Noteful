@@ -46,9 +46,6 @@ fun ActiveNoteScreen(
     onSave: ()-> Unit
 ) {
     val activeNote by viewModel.activeNote.collectAsState()
-    val currentNoteId = rememberSaveable(activeNote?.id) {
-        activeNote?.id ?: UUID.randomUUID().toString()
-    }
 
     var titleInput by rememberSaveable { mutableStateOf( "") }
     var contentInput by rememberSaveable { mutableStateOf("") }
