@@ -40,7 +40,8 @@ import com.prince.noteful.ui.viewModels.NotefulViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: NotefulViewModel
+    viewModel: NotefulViewModel,
+    onCardClick: ()-> Unit
 ) {
     var isNoteSheetOpen by remember { mutableStateOf(false) }
 
@@ -115,7 +116,11 @@ fun HomeScreen(
                 items(notes){ note->
                     NoteCard(
                         title = note.title,
-                        content = note.content
+                        content = note.content,
+                        onClick = {
+                            viewModel.loadNote(note.id)
+                            onCardClick()
+                        }
                     )
                 }
             }
@@ -126,9 +131,15 @@ fun HomeScreen(
 @Composable
 fun NoteCard(
     title: String,
-    content: String
+    content: String,
+    onClick: ()-> Unit
 ) {
-    OutlinedCard {
+    OutlinedCard(
+        modifier = Modifier.clickable(
+            enabled = true,
+            onClick = { onClick() }
+        )
+    ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)

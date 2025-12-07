@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Archive
@@ -27,6 +26,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,14 +46,21 @@ fun ActiveNoteScreen(
     onSave: ()-> Unit
 ) {
     val activeNote by viewModel.activeNote.collectAsState()
-    val existingTitle = activeNote?.title.orEmpty()
-    val existingContent = activeNote?.content.orEmpty()
+    val currentNoteId = rememberSaveable(activeNote?.id) {
+        activeNote?.id ?: UUID.randomUUID().toString()
+    }
 
-    var titleInput by rememberSaveable { mutableStateOf(activeNote?.title ?: "") }
-    var contentInput by rememberSaveable { mutableStateOf(activeNote?.content ?: "") }
-    val hasModified = titleInput != existingTitle || contentInput != existingContent
+    var titleInput by rememberSaveable { mutableStateOf( "") }
+    var contentInput by rememberSaveable { mutableStateOf("") }
 
-    val scrollState = rememberScrollState()
+    LaunchedEffect(activeNote) {
+        if (activeNote != null){
+            titleInput = activeNote?.title.orEmpty()
+            contentInput = activeNote?.content.orEmpty()
+        }
+    }
+
+    val hasModified = (titleInput != activeNote?.title.orEmpty()) || (contentInput != activeNote?.content.orEmpty())
 
     Scaffold(
         modifier = Modifier
@@ -64,12 +71,14 @@ fun ActiveNoteScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            val note = NoteEntity(
-                                id = activeNote?.id ?: UUID.randomUUID().toString(),
-                                title = titleInput.trim(),
-                                content = contentInput.trim()
-                            )
-                            viewModel.saveNote(note)
+                            if (titleInput.isNotBlank() || contentInput.isNotBlank()){
+                                val note = NoteEntity(
+                                    id = activeNote?.id ?: UUID.randomUUID().toString(),
+                                    title = titleInput.trim(),
+                                    content = contentInput.trim()
+                                )
+                                viewModel.saveNote(note)
+                            }
                             onSave()
                         }
                     ) {
@@ -91,6 +100,7 @@ fun ActiveNoteScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .imePadding()
                 .fillMaxSize()
                 .padding(16.dp),
             verticalArrangement = Arrangement.Top
@@ -104,12 +114,13 @@ fun ActiveNoteScreen(
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent
                 ),
                 shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
 
             TextField(
                 value = contentInput,
@@ -118,13 +129,13 @@ fun ActiveNoteScreen(
                 maxLines = Int.MAX_VALUE,
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f)
-                    .verticalScroll(scrollState),
+                    .weight(1f),
                 textStyle = MaterialTheme.typography.bodyLarge,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent
                 ),
                 shape = RoundedCornerShape(12.dp)
             )
@@ -135,12 +146,11 @@ fun ActiveNoteScreen(
                 Button(
                     onClick = {
                         val note = NoteEntity(
-                            id = activeNote?.id ?: UUID.randomUUID().toString(),
+                            id = currentNoteId,
                             title = titleInput.trim(),
                             content = contentInput.trim()
                         )
                         viewModel.saveNote(note)
-                        onSave()
                     },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 ) {

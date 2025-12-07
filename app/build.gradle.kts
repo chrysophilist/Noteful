@@ -5,6 +5,7 @@ plugins {
 
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.2.21"
 }
 
 android {
@@ -74,4 +75,10 @@ dependencies {
     
     // Icons
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.9.6")
+
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
