@@ -78,6 +78,10 @@ fun ActiveNoteScreen(
                                     content = contentInput.trim()
                                 )
                                 viewModel.saveNote(note)
+                            } else {
+                                activeNote?.let { thisNote->
+                                    viewModel.deleteNote(thisNote)
+                                }
                             }
                             onSave()
                         }
@@ -145,12 +149,19 @@ fun ActiveNoteScreen(
             if (hasModified){
                 Button(
                     onClick = {
-                        val note = NoteEntity(
-                            id = currentNoteId,
-                            title = titleInput.trim(),
-                            content = contentInput.trim()
-                        )
-                        viewModel.saveNote(note)
+                        if (titleInput.isNotBlank() || contentInput.isNotBlank()){
+                            val note = NoteEntity(
+                                id = activeNote?.id ?: UUID.randomUUID().toString(),
+                                title = titleInput.trim(),
+                                content = contentInput.trim()
+                            )
+                            viewModel.saveNote(note)
+                        } else {
+                            activeNote?.let { thisNote->
+                                viewModel.deleteNote(thisNote)
+                            }
+                            onSave()
+                        }
                     },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 ) {

@@ -33,6 +33,8 @@ class NotefulViewModel @Inject constructor(
 
     fun saveNote(note: NoteEntity) = viewModelScope.launch {
         repo.upsertNote(note)
+
+        _activeNote.value = note
     }
 
     fun deleteNote(note: NoteEntity) = viewModelScope.launch {
