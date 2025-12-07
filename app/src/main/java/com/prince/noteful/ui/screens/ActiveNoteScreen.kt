@@ -112,6 +112,7 @@ fun ActiveNoteScreen(
             TextField(
                 value = titleInput,
                 onValueChange = { titleInput=it },
+                placeholder = {Text("Add Title")},
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.titleLarge,
@@ -129,6 +130,7 @@ fun ActiveNoteScreen(
             TextField(
                 value = contentInput,
                 onValueChange = { contentInput=it },
+                placeholder = {Text("Start writing...")},
                 singleLine = false,
                 maxLines = Int.MAX_VALUE,
                 modifier = Modifier
