@@ -15,8 +15,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +51,7 @@ fun HomeScreen(
     onCardClick: ()-> Unit
 ) {
     var isNoteSheetOpen by rememberSaveable() { mutableStateOf(false) }
+    var isGrid by rememberSaveable { mutableStateOf(true) }
 
     if(isNoteSheetOpen){
         ModalBottomSheet(
@@ -81,6 +84,11 @@ fun HomeScreen(
                 },
                 actions = {
                     IconButton(onClick = {}) { Icon(Icons.Default.Search, "Search") }
+                    if (isGrid){
+                        IconButton(onClick = { isGrid = false}) { Icon(Icons.Default.ViewAgenda, "Single-column view") }
+                    } else {
+                        IconButton(onClick = { isGrid = true }) { Icon(Icons.Default.GridView, "Multi-column view") }
+                    }
                     IconButton(onClick = {}) { Icon(Icons.Default.AccountCircle, "Account") }
                 }
             )
@@ -110,7 +118,11 @@ fun HomeScreen(
             }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(160.dp),
+                columns = if (isGrid){
+                    GridCells.Adaptive(160.dp)
+                } else {
+                    GridCells.Fixed(1)
+                },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
