@@ -1,5 +1,6 @@
 package com.prince.noteful.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -103,8 +104,10 @@ fun HomeScreen(
             }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(180.dp),
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                columns = GridCells.Adaptive(160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

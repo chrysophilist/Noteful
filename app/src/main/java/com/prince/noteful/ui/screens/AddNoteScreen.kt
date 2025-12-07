@@ -142,7 +142,8 @@ fun AddNoteScreen(
                     onDismiss()
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            enabled = titleInput.isNotBlank() || contentInput.isNotBlank()
         ) {
             Text("Save Note")
         }
