@@ -57,7 +57,8 @@ import com.prince.noteful.ui.viewModels.NotefulViewModel
 @Composable
 fun HomeScreen(
     viewModel: NotefulViewModel,
-    onCardClick: ()-> Unit
+    onCardClick: ()-> Unit,
+    onBack: ()-> Unit
 ) {
     var isNoteSheetOpen by rememberSaveable() { mutableStateOf(false) }
     var isGrid by rememberSaveable { mutableStateOf(true) }

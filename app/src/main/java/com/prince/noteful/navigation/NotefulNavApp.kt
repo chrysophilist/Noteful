@@ -26,6 +26,9 @@ fun NotefulNavApp(
                 viewModel,
                 onCardClick = {
                     navController.navigate(ActiveNoteRoute)
+                },
+                onBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -33,7 +36,7 @@ fun NotefulNavApp(
         composable<ActiveNoteRoute>{
             ActiveNoteScreen(
                 viewModel,
-                onSave = {
+                onBack = {
                     navController.popBackStack()
                 }
             )

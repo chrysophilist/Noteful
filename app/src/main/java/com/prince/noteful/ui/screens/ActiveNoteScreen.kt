@@ -1,14 +1,18 @@
 package com.prince.noteful.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -17,6 +21,9 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NotificationAdd
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,7 +32,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -48,7 +57,7 @@ import java.util.UUID
 @Composable
 fun ActiveNoteScreen(
     viewModel: NotefulViewModel,
-    onSave: ()-> Unit
+    onBack: ()-> Unit
 ) {
     val activeNote by viewModel.activeNote.collectAsState()
 
@@ -62,7 +71,79 @@ fun ActiveNoteScreen(
         }
     }
 
+    fun onSave(){
+        if (titleInput.isNotBlank() || contentInput.isNotBlank()){
+            val note = NoteEntity(
+                id = activeNote?.id ?: UUID.randomUUID().toString(),
+                title = titleInput.trim(),
+                content = contentInput.trim()
+            )
+            viewModel.saveNote(note)
+        } else {
+            activeNote?.let { thisNote->
+                viewModel.deleteNote(thisNote)
+            }
+            onBack()
+        }
+    }
+
     val hasModified = (titleInput != activeNote?.title.orEmpty()) || (contentInput != activeNote?.content.orEmpty())
+
+    var showDialog by remember { mutableStateOf(false) }
+    BackHandler(
+        enabled = hasModified
+    ) {
+        showDialog = true
+    }
+
+    if (showDialog){
+        BasicAlertDialog(
+            onDismissRequest = { showDialog=false }
+        ){
+            Surface(
+                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = AlertDialogDefaults.TonalElevation,
+                color = AlertDialogDefaults.containerColor
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp)
+                ) {
+                    Text(
+                        text = "Unsaved Changes",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Spacer(modifier=Modifier.height(16.dp))
+                    Text(
+                        text = "You have unsaved edits. Do you want to save before leaving?",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier=Modifier.height(24.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = {
+                                showDialog = false
+                                onBack()
+                            }
+                        ) {
+                            Text("Discard")
+                        }
+                        TextButton(
+                            onClick = {
+                                showDialog = false
+                                onSave()
+                            }
+                        ) {
+                            Text("Save")
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -73,19 +154,8 @@ fun ActiveNoteScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if (titleInput.isNotBlank() || contentInput.isNotBlank()){
-                                val note = NoteEntity(
-                                    id = activeNote?.id ?: UUID.randomUUID().toString(),
-                                    title = titleInput.trim(),
-                                    content = contentInput.trim()
-                                )
-                                viewModel.saveNote(note)
-                            } else {
-                                activeNote?.let { thisNote->
-                                    viewModel.deleteNote(thisNote)
-                                }
-                            }
                             onSave()
+                            onBack()
                         }
                     ) {
                         Icon(
@@ -111,7 +181,7 @@ fun ActiveNoteScreen(
                                         viewModel.deleteNote(thisNote)
                                     }
                                     showMenu = false
-                                    onSave()
+                                    onBack()
                                 },
                                 text = {Text("Delete")},
                                 leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}
@@ -172,19 +242,7 @@ fun ActiveNoteScreen(
             if (hasModified){
                 Button(
                     onClick = {
-                        if (titleInput.isNotBlank() || contentInput.isNotBlank()){
-                            val note = NoteEntity(
-                                id = activeNote?.id ?: UUID.randomUUID().toString(),
-                                title = titleInput.trim(),
-                                content = contentInput.trim()
-                            )
-                            viewModel.saveNote(note)
-                        } else {
-                            activeNote?.let { thisNote->
-                                viewModel.deleteNote(thisNote)
-                            }
-                            onSave()
-                        }
+                        onSave()
                     },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 ) {
