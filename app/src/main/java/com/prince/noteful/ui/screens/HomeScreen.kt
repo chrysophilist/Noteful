@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material3.DropdownMenu
@@ -196,7 +198,8 @@ fun HomeScreen(
                             viewModel.loadNote(note.id)
                             onCardClick()
                         },
-                        onDelete = { viewModel.deleteNote(note) }
+                        onDelete = { viewModel.deleteNote(note) },
+                        isGridOn = isGrid
                     )
                 }
             }
@@ -209,7 +212,8 @@ fun NoteCard(
     title: String,
     content: String,
     onClick: ()-> Unit,
-    onDelete: ()-> Unit
+    onDelete: ()-> Unit,
+    isGridOn: Boolean
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -223,18 +227,60 @@ fun NoteCard(
                     onLongClick = { showMenu = true }
                 )
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = content,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            if (isGridOn) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 2
+                    )
+                    Text(
+                        text = content,
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 3
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleLarge,
+                            maxLines = 1
+                        )
+                        Text(
+                            text = content,
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 3
+                        )
+                    }
+                    Box(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        var showMenu by remember { mutableStateOf(false) }
+                        IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "More") }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                onClick = { onDelete() },
+                                text = {Text("Delete")},
+                                leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}
+                            )
+                        }
+                    }
+                }
             }
         }
 
