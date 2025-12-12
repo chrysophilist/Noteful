@@ -89,60 +89,11 @@ fun ActiveNoteScreen(
 
     val hasModified = (titleInput != activeNote?.title.orEmpty()) || (contentInput != activeNote?.content.orEmpty())
 
-    var showDialog by remember { mutableStateOf(false) }
     BackHandler(
-        enabled = hasModified
+        enabled = true
     ) {
-        showDialog = true
-    }
-
-    if (showDialog){
-        BasicAlertDialog(
-            onDismissRequest = { showDialog=false }
-        ){
-            Surface(
-                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
-                shape = MaterialTheme.shapes.large,
-                tonalElevation = AlertDialogDefaults.TonalElevation,
-                color = AlertDialogDefaults.containerColor
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp)
-                ) {
-                    Text(
-                        text = "Unsaved Changes",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    Spacer(modifier=Modifier.height(16.dp))
-                    Text(
-                        text = "You have unsaved edits. Do you want to save before leaving?",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier=Modifier.height(24.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = {
-                                showDialog = false
-                                onBack()
-                            }
-                        ) {
-                            Text("Discard")
-                        }
-                        TextButton(
-                            onClick = {
-                                showDialog = false
-                                onSave()
-                            }
-                        ) {
-                            Text("Save")
-                        }
-                    }
-                }
-            }
-        }
+        onSave()
+        onBack()
     }
 
     Scaffold(
