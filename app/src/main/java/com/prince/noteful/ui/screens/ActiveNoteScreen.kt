@@ -83,7 +83,6 @@ fun ActiveNoteScreen(
             activeNote?.let { thisNote->
                 viewModel.deleteNote(thisNote)
             }
-            onBack()
         }
     }
 
@@ -92,8 +91,8 @@ fun ActiveNoteScreen(
     BackHandler(
         enabled = true
     ) {
-        onSave()
         onBack()
+        onSave()
     }
 
     Scaffold(
@@ -105,8 +104,8 @@ fun ActiveNoteScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            onSave()
                             onBack()
+                            onSave()
                         }
                     ) {
                         Icon(
@@ -128,11 +127,11 @@ fun ActiveNoteScreen(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
+                                    onBack()
                                     activeNote?.let { thisNote->
                                         viewModel.deleteNote(thisNote)
                                     }
                                     showMenu = false
-                                    onBack()
                                 },
                                 text = {Text("Delete")},
                                 leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}

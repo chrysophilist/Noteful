@@ -83,8 +83,8 @@ fun AddNoteScreen(
             onDismissRequest = { showDialog=false }
         ){
             Surface(
-                modifier = Modifier.wrapContentWidth().wrapContentHeight(),
-                shape = MaterialTheme.shapes.large,
+                modifier = Modifier.fillMaxWidth(0.9f).wrapContentHeight(),
+                shape = MaterialTheme.shapes.extraLarge,
                 tonalElevation = AlertDialogDefaults.TonalElevation,
                 color = AlertDialogDefaults.containerColor
             ) {
@@ -149,8 +149,8 @@ fun AddNoteScreen(
             ) {
                 IconButton(
                     onClick = {
-                        onSave()
                         onDismiss()
+                        onSave()
                     }
                 ) {
                     Icon(
@@ -202,8 +202,8 @@ fun AddNoteScreen(
 
         Button(
             onClick = {
-                onSave()
                 onDismiss()
+                onSave()
             },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             enabled = titleInput.isNotBlank() || contentInput.isNotBlank()

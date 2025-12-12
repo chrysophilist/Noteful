@@ -58,7 +58,6 @@ import com.prince.noteful.ui.viewModels.NotefulViewModel
 fun HomeScreen(
     viewModel: NotefulViewModel,
     onCardClick: ()-> Unit,
-    onBack: ()-> Unit
 ) {
     var isNoteSheetOpen by rememberSaveable() { mutableStateOf(false) }
     var isGrid by rememberSaveable { mutableStateOf(true) }
@@ -177,6 +176,21 @@ fun HomeScreen(
                     style = MaterialTheme.typography.labelLarge
                 )
             }
+        } else if (searchedNotes.isEmpty()) {
+            Box(
+                modifier=Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment= Alignment.Center
+            ){
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(Icons.Default.Search, null)
+                    Text( text = "No notes found" )
+                }
+            }
         } else {
             LazyVerticalGrid(
                 columns = if (isGrid){
@@ -291,8 +305,8 @@ fun NoteCard(
         ) {
             DropdownMenuItem(
                 onClick = {
-                    onDelete()
                     showMenu = false
+                    onDelete()
                 },
                 text = {Text("Delete")},
                 leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}
