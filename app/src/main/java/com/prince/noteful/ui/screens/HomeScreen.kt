@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
@@ -194,18 +197,18 @@ fun HomeScreen(
                 }
             }
         } else {
-            LazyVerticalGrid(
+            LazyVerticalStaggeredGrid(
                 columns = if (isGrid){
-                    GridCells.Adaptive(160.dp)
+                    StaggeredGridCells.Adaptive(160.dp)
                 } else {
-                    GridCells.Fixed(1)
+                    StaggeredGridCells.Fixed(1)
                 },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalItemSpacing = 8.dp
             ) {
                 items(searchedNotes){ note->
                     NoteCard(
@@ -257,7 +260,7 @@ fun NoteCard(
                     Text(
                         text = content,
                         style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 3
+                        maxLines = 10
                     )
                 }
             } else {
