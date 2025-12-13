@@ -252,16 +252,20 @@ fun NoteCard(
                     modifier = Modifier
                         .padding(16.dp)
                 ) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleLarge,
-                        maxLines = 2
-                    )
-                    Text(
-                        text = content,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 10
-                    )
+                    if (title.isNotEmpty()){
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleLarge,
+                            maxLines = 2
+                        )
+                    }
+                    if (content.isNotEmpty()){
+                        Text(
+                            text = content,
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 10
+                        )
+                    }
                 }
             } else {
                 Row(
@@ -273,16 +277,20 @@ fun NoteCard(
                             .weight(1f)
                             .padding(16.dp)
                     ) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleLarge,
-                            maxLines = 1
-                        )
-                        Text(
-                            text = content,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 3
-                        )
+                        if(title.isNotEmpty()){
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.titleLarge,
+                                maxLines = 1
+                            )
+                        }
+                        if(content.isNotEmpty()){
+                            Text(
+                                text = content,
+                                style = MaterialTheme.typography.bodyLarge,
+                                maxLines = 10
+                            )
+                        }
                     }
                     Box(
                         modifier = Modifier.padding(16.dp)
