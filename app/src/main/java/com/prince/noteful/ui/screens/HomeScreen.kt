@@ -52,15 +52,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.prince.noteful.ui.viewModels.NotefulViewModel
+import com.prince.noteful.ui.viewModels.PrefViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: NotefulViewModel,
     onCardClick: ()-> Unit,
+    prefviewModel: PrefViewModel
 ) {
     var isNoteSheetOpen by rememberSaveable() { mutableStateOf(false) }
-    var isGrid by rememberSaveable { mutableStateOf(true) }
+    val isGrid by prefviewModel.isGridView.collectAsState()
 
     var isSearchBarActive by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
@@ -135,9 +137,9 @@ fun HomeScreen(
                     actions = {
                         IconButton(onClick = { isSearchBarActive=true }) { Icon(Icons.Default.Search, "Search") }
                         if (isGrid){
-                            IconButton(onClick = { isGrid = false}) { Icon(Icons.Default.ViewAgenda, "Single-column view") }
+                            IconButton(onClick = { prefviewModel.setGridView() }) { Icon(Icons.Default.ViewAgenda, "Single-column view") }
                         } else {
-                            IconButton(onClick = { isGrid = true }) { Icon(Icons.Default.GridView, "Multi-column view") }
+                            IconButton(onClick = { prefviewModel.setGridView() }) { Icon(Icons.Default.GridView, "Multi-column view") }
                         }
                         IconButton(onClick = {}) { Icon(Icons.Default.AccountCircle, "Account") }
                     }

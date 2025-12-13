@@ -9,10 +9,12 @@ import androidx.navigation.compose.rememberNavController
 import com.prince.noteful.ui.screens.ActiveNoteScreen
 import com.prince.noteful.ui.screens.HomeScreen
 import com.prince.noteful.ui.viewModels.NotefulViewModel
+import com.prince.noteful.ui.viewModels.PrefViewModel
 
 @Composable
 fun NotefulNavApp(
-    viewModel: NotefulViewModel = hiltViewModel()
+    viewModel: NotefulViewModel = hiltViewModel(),
+    prefViewModel: PrefViewModel = hiltViewModel()
 ) {
 
     val navController = rememberNavController()
@@ -26,10 +28,11 @@ fun NotefulNavApp(
                 viewModel,
                 onCardClick = {
                     navController.navigate(ActiveNoteRoute)
-                }
+                },
+                prefViewModel
             )
         }
-        
+
         composable<ActiveNoteRoute>{
             ActiveNoteScreen(
                 viewModel,
