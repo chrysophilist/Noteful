@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -38,7 +39,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.prince.noteful.data.local.NoteEntity
 import com.prince.noteful.ui.viewModels.NotefulViewModel
 import java.util.UUID
@@ -144,6 +147,8 @@ fun AddNoteScreen(
                 style = MaterialTheme.typography.headlineLarge
             )
             Surface(
+                modifier = Modifier
+                    .size(48.dp),
                 shape = CircleShape,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
             ) {
@@ -205,10 +210,19 @@ fun AddNoteScreen(
                 onDismiss()
                 onSave()
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            enabled = titleInput.isNotBlank() || contentInput.isNotBlank()
+            enabled = titleInput.isNotBlank() || contentInput.isNotBlank(),
+            shape = CircleShape,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
         ) {
-            Text("Save Note")
+            Text(
+                text = "Save Note",
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            )
         }
     }
 }
