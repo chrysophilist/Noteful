@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-    kotlin("plugin.serialization") version "2.2.21"
+    kotlin("plugin.serialization") version "2.3.10"
 }
 
 android {
@@ -32,11 +31,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        jvmToolchain(21)
     }
     buildFeatures {
         compose = true
@@ -62,26 +61,26 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    ksp("com.google.dagger:hilt-compiler:2.57.2")
-    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Room
-    implementation("androidx.room:room-runtime:2.8.4")
-    ksp("androidx.room:room-compiler:2.8.4")
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 
     // ViewModel for compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     
     // Icons
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.9.6")
+    implementation(libs.androidx.navigation.compose)
 
     // Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation(libs.kotlinx.serialization.json)
 
     // Datastore preferences
-    implementation("androidx.datastore:datastore-preferences:1.2.0")
+    implementation(libs.androidx.datastore.preferences)
 }
