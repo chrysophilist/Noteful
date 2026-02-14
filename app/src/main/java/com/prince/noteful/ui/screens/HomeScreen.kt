@@ -73,7 +73,8 @@ fun HomeScreen(
             sheetState = rememberModalBottomSheetState(
                 skipPartiallyExpanded = true,
             ),
-            modifier = Modifier.statusBarsPadding()
+            modifier = Modifier.statusBarsPadding(),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ) {
             AddNoteScreen(
                 viewModel,
