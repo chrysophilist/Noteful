@@ -2,7 +2,10 @@ package com.prince.noteful.ui.components
 
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.NotificationAdd
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,7 +22,10 @@ fun DynamicDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     onDelete: (() -> Unit) ?= null,
-    onShare: (() -> Unit) ?= null
+    onShare: (() -> Unit) ?= null,
+    onPin: (() -> Unit) ?= null,
+    onReminder: (() -> Unit) ?= null,
+    onArchive: (() -> Unit) ?= null
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -28,6 +34,27 @@ fun DynamicDropdownMenu(
             .width(160.dp),
         shape = MaterialTheme.shapes.large
     ) {
+        onPin?.let {
+            DropdownMenuItem(
+                onClick = { onPin() },
+                text = {Text("Pin")},
+                leadingIcon = {Icon(Icons.Default.PushPin, "Pin")}
+            )
+        }
+        onReminder?.let {
+            DropdownMenuItem(
+                onClick = { onReminder() },
+                text = {Text("Reminder")},
+                leadingIcon = {Icon(Icons.Default.NotificationAdd, "Reminder")}
+            )
+        }
+        onArchive?.let {
+            DropdownMenuItem(
+                onClick = { onArchive() },
+                text = {Text("Archive")},
+                leadingIcon = {Icon(Icons.Default.Archive, "Archive")}
+            )
+        }
         onDelete?.let {
             DropdownMenuItem(
                 onClick = { onDelete() },

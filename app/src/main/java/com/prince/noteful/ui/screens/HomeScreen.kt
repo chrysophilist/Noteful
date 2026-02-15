@@ -421,6 +421,9 @@ fun NoteCard(
                                 showMenu = false
                                 onDelete()
                             },
+                            onPin = {},
+                            onReminder = {},
+                            onArchive = {},
                             onShare = {}
                         )
                     }
@@ -436,6 +439,9 @@ fun NoteCard(
                     showMenu = false
                     onDelete()
                 },
+                onPin = {},
+                onReminder = {},
+                onArchive = {},
                 onShare = {}
             )
         }
