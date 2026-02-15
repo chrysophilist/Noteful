@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -25,30 +24,24 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NoteAlt
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
@@ -56,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +64,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.prince.noteful.data.local.NoteEntity
+import com.prince.noteful.navigation.AppScaffoldState
 import com.prince.noteful.ui.components.DynamicDropdownMenu
 import com.prince.noteful.ui.viewModels.NotefulViewModel
 import com.prince.noteful.ui.viewModels.PrefViewModel
@@ -78,6 +73,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
+    setScaffoldState: (AppScaffoldState) -> Unit,
+    innerPadding: PaddingValues,
     viewModel: NotefulViewModel,
     onCardClick: ()-> Unit,
     prefviewModel: PrefViewModel
@@ -116,102 +113,72 @@ fun HomeScreen(
 
     }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        topBar = {
-                AppBarWithSearch(
-                    state = searchBarState,
-                    navigationIcon = {
-                        IconButton( onClick = {} ) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu"
+    SideEffect {
+        setScaffoldState(
+            AppScaffoldState(
+                modifier = Modifier
+                    .fillMaxSize(),
+                topBar = {
+                    AppBarWithSearch(
+                        state = searchBarState,
+                        navigationIcon = {
+                            IconButton( onClick = {} ) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Menu"
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {}) { Icon(Icons.Default.AccountCircle, "Account") }
+                        },
+                        inputField = {
+                            HomeScreenInputField(
+                                textFieldState = textFieldState,
+                                searchBarState = searchBarState,
+                                isGrid = isGrid,
+                                onToggleGrid = { prefviewModel.setGridView() }
                             )
                         }
-                    },
-                    actions = {
-                        IconButton(onClick = {}) { Icon(Icons.Default.AccountCircle, "Account") }
-                    },
-                    inputField = {
-                        HomeScreenInputField(
-                            textFieldState = textFieldState,
-                            searchBarState = searchBarState,
-                            isGrid = isGrid,
-                            onToggleGrid = { prefviewModel.setGridView() }
-                        )
-                    }
-                )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { isNoteSheetOpen = true },
-                shape = MaterialTheme.shapes.extraLarge
-            ){
-                Icon(Icons.Default.Add, "Add Note")
-            }
-        }
-    ) { innerPadding->
-
-        if (searchBarState.currentValue == SearchBarValue.Expanded){
-            ExpandedFullScreenSearchBar(
-                state = searchBarState,
-                inputField = {
-                    HomeScreenInputField(
-                        textFieldState = textFieldState,
-                        searchBarState = searchBarState,
-                        isGrid = isGrid,
-                        onToggleGrid = { prefviewModel.setGridView() }
                     )
-                }
-            ) {
-                if (searchedNotes.isEmpty() && query.isNotBlank()) {
-                    Box(
-                        modifier=Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding),
-                        contentAlignment= Alignment.Center
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { isNoteSheetOpen = true },
+                        shape = MaterialTheme.shapes.extraLarge
                     ){
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(Icons.Default.Search, null)
-                            Text( text = "No notes found" )
-                        }
+                        Icon(Icons.Default.Add, "Add Note")
                     }
-                } else {
-                    NotesListContent(
-                        isGrid = isGrid,
-                        innerPadding = innerPadding,
-                        searchedNotes = searchedNotes,
-                        viewModel = viewModel,
-                        onCardClick = onCardClick
-                    )
                 }
+            )
+        )
+    }
+
+    if (searchBarState.currentValue == SearchBarValue.Expanded){
+        ExpandedFullScreenSearchBar(
+            state = searchBarState,
+            inputField = {
+                HomeScreenInputField(
+                    textFieldState = textFieldState,
+                    searchBarState = searchBarState,
+                    isGrid = isGrid,
+                    onToggleGrid = { prefviewModel.setGridView() }
+                )
             }
-        } else {
-            if (notes.isEmpty()) {
+        ) {
+            if (searchedNotes.isEmpty() && query.isNotBlank()) {
                 Box(
-                    modifier = Modifier
+                    modifier=Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
+                    contentAlignment= Alignment.Center
+                ){
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.NoteAlt,
-                            contentDescription = null,
-                            modifier = Modifier.size(72.dp)
-                        )
-                        Text(
-                            "Notes you add appear here",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Icon(Icons.Default.Search, null)
+                        Text( text = "No notes found" )
                     }
                 }
             } else {
@@ -224,6 +191,39 @@ fun HomeScreen(
                 )
             }
         }
+    } else {
+        if (notes.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.NoteAlt,
+                        contentDescription = null,
+                        modifier = Modifier.size(72.dp)
+                    )
+                    Text(
+                        "Notes you add appear here",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            NotesListContent(
+                isGrid = isGrid,
+                innerPadding = innerPadding,
+                searchedNotes = searchedNotes,
+                viewModel = viewModel,
+                onCardClick = onCardClick
+            )
+        }
     }
 }
 
@@ -234,7 +234,7 @@ fun NotesListContent(
     searchedNotes: List<NoteEntity>,
     viewModel: NotefulViewModel,
     onCardClick: () -> Unit
-    ) {
+) {
     LazyVerticalStaggeredGrid(
         columns = if (isGrid) {
             StaggeredGridCells.Adaptive(160.dp)

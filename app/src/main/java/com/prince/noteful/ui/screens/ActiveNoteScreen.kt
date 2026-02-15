@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -47,6 +48,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.prince.noteful.data.local.NoteEntity
+import com.prince.noteful.navigation.AppScaffoldState
 import com.prince.noteful.ui.components.DynamicDropdownMenu
 import com.prince.noteful.ui.viewModels.NotefulViewModel
 import java.util.UUID
@@ -54,6 +56,8 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ActiveNoteScreen(
+    setScaffoldState: (AppScaffoldState) -> Unit,
+    innerPadding: PaddingValues,
     viewModel: NotefulViewModel,
     onBack: ()-> Unit
 ) {
@@ -100,138 +104,142 @@ fun ActiveNoteScreen(
         onSave()
     }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize().imePadding().nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MediumTopAppBar(
-                title = {
-                    TextField(
-                        value = titleInput,
-                        onValueChange = { titleInput=it },
-                        placeholder = {Text("Add Title")},
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent
-                        )
+    SideEffect {
+        setScaffoldState(
+            AppScaffoldState(
+                modifier = Modifier
+                    .fillMaxSize().imePadding().nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = {
+                    MediumTopAppBar(
+                        title = {
+                            TextField(
+                                value = titleInput,
+                                onValueChange = { titleInput=it },
+                                placeholder = {Text("Add Title")},
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                textStyle = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                colors = TextFieldDefaults.colors(
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent
+                                )
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    onBack()
+                                    onSave()
+                                }
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    "Return to home screen"
+                                )
+                            }
+                        },
+                        actions = {
+                            if (!isCollapsed){
+                                IconButton(onClick = {}) { Icon(Icons.Default.PushPin, "Pin") }
+                                IconButton(onClick = {}) { Icon(Icons.Default.NotificationAdd, "Reminder") }
+                                IconButton(onClick = {}) { Icon(Icons.Default.Archive, "Archive") }
+                            }
+                            Box {
+                                var showMenu by remember { mutableStateOf(false) }
+                                IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "More") }
+                                if (isCollapsed){
+                                    DynamicDropdownMenu(
+                                        expanded = showMenu,
+                                        onDismissRequest = { showMenu = false },
+                                        onDelete = {
+                                            onBack()
+                                            activeNote?.let { thisNote->
+                                                viewModel.deleteNote(thisNote)
+                                            }
+                                            showMenu = false
+                                        },
+                                        onPin = {},
+                                        onReminder = {},
+                                        onArchive = {},
+                                        onShare = {}
+                                    )
+                                } else {
+                                    DynamicDropdownMenu(
+                                        expanded = showMenu,
+                                        onDismissRequest = { showMenu = false },
+                                        onDelete = {
+                                            onBack()
+                                            activeNote?.let { thisNote->
+                                                viewModel.deleteNote(thisNote)
+                                            }
+                                            showMenu = false
+                                        },
+                                        onShare = {}
+                                    )
+                                }
+                            }
+                        },
+                        scrollBehavior = scrollBehavior
                     )
                 },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            onBack()
-                            onSave()
-                        }
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            "Return to home screen"
-                        )
-                    }
-                },
-                actions = {
-                    if (!isCollapsed){
-                        IconButton(onClick = {}) { Icon(Icons.Default.PushPin, "Pin") }
-                        IconButton(onClick = {}) { Icon(Icons.Default.NotificationAdd, "Reminder") }
-                        IconButton(onClick = {}) { Icon(Icons.Default.Archive, "Archive") }
-                    }
-                    Box {
-                        var showMenu by remember { mutableStateOf(false) }
-                        IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "More") }
-                        if (isCollapsed){
-                            DynamicDropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu = false },
-                                onDelete = {
-                                    onBack()
-                                    activeNote?.let { thisNote->
-                                        viewModel.deleteNote(thisNote)
-                                    }
-                                    showMenu = false
-                                },
-                                onPin = {},
-                                onReminder = {},
-                                onArchive = {},
-                                onShare = {}
-                            )
-                        } else {
-                            DynamicDropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu = false },
-                                onDelete = {
-                                    onBack()
-                                    activeNote?.let { thisNote->
-                                        viewModel.deleteNote(thisNote)
-                                    }
-                                    showMenu = false
-                                },
-                                onShare = {}
-                            )
-                        }
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
-        },
 
-        bottomBar = {
-            if (hasModified){
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    contentAlignment = Alignment.Center
-                ){
-                    Button(
-                        onClick = {
-                            onSave()
-                        },
-                        shape = CircleShape,
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .height(56.dp)
-                    ) {
-                        Text(
-                            text = "Save Note",
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                bottomBar = {
+                    if (hasModified){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Button(
+                                onClick = {
+                                    onSave()
+                                },
+                                shape = CircleShape,
+                                modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                                    .height(56.dp)
+                            ) {
+                                Text(
+                                    text = "Save Note",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            }
+                        }
                     }
                 }
-            }
-        }
-    ) { innerPadding->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.Top
-        ){
-
-            TextField(
-                value = contentInput,
-                onValueChange = { contentInput=it },
-                placeholder = {Text("Start writing...")},
-                singleLine = false,
-                maxLines = Int.MAX_VALUE,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                textStyle = MaterialTheme.typography.bodyLarge,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent
-                )
             )
-        }
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.Top
+    ){
+
+        TextField(
+            value = contentInput,
+            onValueChange = { contentInput=it },
+            placeholder = {Text("Start writing...")},
+            singleLine = false,
+            maxLines = Int.MAX_VALUE,
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
+            textStyle = MaterialTheme.typography.bodyLarge,
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent
+            )
+        )
     }
 }
