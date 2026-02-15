@@ -70,6 +70,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.prince.noteful.data.local.NoteEntity
+import com.prince.noteful.ui.components.DynamicDropdownMenu
 import com.prince.noteful.ui.viewModels.NotefulViewModel
 import com.prince.noteful.ui.viewModels.PrefViewModel
 import kotlinx.coroutines.launch
@@ -413,7 +414,7 @@ fun NoteCard(
                             .size(48.dp)
                     ) {
                         IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "More") }
-                        DropdownMenu(
+                        DynamicDropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false },
                             onDelete = {
@@ -428,7 +429,7 @@ fun NoteCard(
         }
 
         if (isGridOn){
-            DropdownMenu(
+            DynamicDropdownMenu(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },
                 onDelete = {
@@ -441,30 +442,3 @@ fun NoteCard(
     }
 }
 
-@Composable
-private fun DropdownMenu(
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    onDelete: () -> Unit,
-    onShare: () -> Unit
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { onDismissRequest() },
-        modifier = Modifier
-            .width(160.dp),
-        shape = MaterialTheme.shapes.large
-    ) {
-        DropdownMenuItem(
-            onClick = { onDelete() },
-            text = {Text("Delete")},
-            leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}
-        )
-        HorizontalDivider(thickness = 1.5.dp, color = MaterialTheme.colorScheme.background)
-        DropdownMenuItem(
-            onClick = { onShare() },
-            text = {Text("Share")},
-            leadingIcon = {Icon(Icons.Default.Share, "Share")}
-        )
-    }
-}

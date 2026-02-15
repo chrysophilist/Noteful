@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.prince.noteful.data.local.NoteEntity
+import com.prince.noteful.ui.components.DynamicDropdownMenu
 import com.prince.noteful.ui.viewModels.NotefulViewModel
 import java.util.UUID
 
@@ -121,22 +122,17 @@ fun ActiveNoteScreen(
                     Box {
                         var showMenu by remember { mutableStateOf(false) }
                         IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "More") }
-                        DropdownMenu(
+                        DynamicDropdownMenu(
                             expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onBack()
-                                    activeNote?.let { thisNote->
-                                        viewModel.deleteNote(thisNote)
-                                    }
-                                    showMenu = false
-                                },
-                                text = {Text("Delete")},
-                                leadingIcon = {Icon(Icons.Default.DeleteForever, "Delete")}
-                            )
-                        }
+                            onDismissRequest = { showMenu = false },
+                            onDelete = {
+                                onBack()
+                                activeNote?.let { thisNote->
+                                    viewModel.deleteNote(thisNote)
+                                }
+                                showMenu = false
+                            }
+                        )
                     }
                 }
             )
