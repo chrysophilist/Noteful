@@ -57,7 +57,6 @@ import java.util.UUID
 @Composable
 fun ActiveNoteScreen(
     setScaffoldState: (AppScaffoldState) -> Unit,
-    innerPadding: PaddingValues,
     viewModel: NotefulViewModel,
     onBack: ()-> Unit
 ) {
@@ -104,7 +103,7 @@ fun ActiveNoteScreen(
         onSave()
     }
 
-    SideEffect {
+    LaunchedEffect(hasModified) {
         setScaffoldState(
             AppScaffoldState(
                 modifier = Modifier
@@ -218,7 +217,6 @@ fun ActiveNoteScreen(
 
     Column(
         modifier = Modifier
-            .padding(innerPadding)
             .fillMaxSize()
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Top

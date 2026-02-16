@@ -49,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -74,9 +75,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     setScaffoldState: (AppScaffoldState) -> Unit,
-    innerPadding: PaddingValues,
     viewModel: NotefulViewModel,
     onCardClick: ()-> Unit,
+    onProfileClick: ()-> Unit,
     prefviewModel: PrefViewModel
 ) {
     var isNoteSheetOpen by rememberSaveable() { mutableStateOf(false) }
@@ -113,7 +114,7 @@ fun HomeScreen(
 
     }
 
-    SideEffect {
+    LaunchedEffect(Unit) {
         setScaffoldState(
             AppScaffoldState(
                 modifier = Modifier
@@ -130,7 +131,7 @@ fun HomeScreen(
                             }
                         },
                         actions = {
-                            IconButton(onClick = {}) { Icon(Icons.Default.AccountCircle, "Account") }
+                            IconButton(onClick = { onProfileClick() }) { Icon(Icons.Default.AccountCircle, "Account") }
                         },
                         inputField = {
                             HomeScreenInputField(
@@ -169,8 +170,7 @@ fun HomeScreen(
             if (searchedNotes.isEmpty() && query.isNotBlank()) {
                 Box(
                     modifier=Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .fillMaxSize(),
                     contentAlignment= Alignment.Center
                 ){
                     Column(
@@ -184,7 +184,6 @@ fun HomeScreen(
             } else {
                 NotesListContent(
                     isGrid = isGrid,
-                    innerPadding = innerPadding,
                     searchedNotes = searchedNotes,
                     viewModel = viewModel,
                     onCardClick = onCardClick
@@ -195,8 +194,7 @@ fun HomeScreen(
         if (notes.isEmpty()) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -218,7 +216,6 @@ fun HomeScreen(
         } else {
             NotesListContent(
                 isGrid = isGrid,
-                innerPadding = innerPadding,
                 searchedNotes = searchedNotes,
                 viewModel = viewModel,
                 onCardClick = onCardClick
@@ -230,7 +227,6 @@ fun HomeScreen(
 @Composable
 fun NotesListContent(
     isGrid: Boolean,
-    innerPadding: PaddingValues,
     searchedNotes: List<NoteEntity>,
     viewModel: NotefulViewModel,
     onCardClick: () -> Unit
@@ -242,8 +238,7 @@ fun NotesListContent(
             StaggeredGridCells.Fixed(1)
         },
         modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+            .fillMaxSize(),
         contentPadding = PaddingValues(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp

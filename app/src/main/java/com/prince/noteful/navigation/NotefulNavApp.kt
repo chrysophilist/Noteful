@@ -1,5 +1,6 @@
 package com.prince.noteful.navigation
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.prince.noteful.ui.screens.ActiveNoteScreen
 import com.prince.noteful.ui.screens.HomeScreen
+import com.prince.noteful.ui.screens.SettingsScreen
 import com.prince.noteful.ui.viewModels.NotefulViewModel
 import com.prince.noteful.ui.viewModels.PrefViewModel
 
@@ -35,15 +37,19 @@ fun NotefulNavApp(
 
         NavHost(
             navController = navController,
-            startDestination = HomeScreenRoute
+            startDestination = HomeScreenRoute,
+            modifier = Modifier
+                .padding(innerPadding)
         ){
             composable<HomeScreenRoute>{
                 HomeScreen(
                     setScaffoldState = { scaffoldState = it },
-                    innerPadding = innerPadding,
                     viewModel,
                     onCardClick = {
                         navController.navigate(ActiveNoteRoute)
+                    },
+                    onProfileClick = {
+                        navController.navigate(SettingsRoute)
                     },
                     prefViewModel
                 )
@@ -52,11 +58,19 @@ fun NotefulNavApp(
             composable<ActiveNoteRoute>{
                 ActiveNoteScreen(
                     setScaffoldState = { scaffoldState = it },
-                    innerPadding = innerPadding,
                     viewModel,
                     onBack = {
                         navController.popBackStack()
                     }
+                )
+            }
+
+            composable<SettingsRoute>{
+                SettingsScreen(
+                    setScaffoldState = { scaffoldState = it },
+                    onBack = {
+                        navController.popBackStack()
+                    },
                 )
             }
         }
